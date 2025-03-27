@@ -1,6 +1,0 @@
-LOAD DATA LOCAL INFILE'C:/Users/ADMIN/Desktop/CSC1223(P)/Day2/D2.csv'
-INTO TABLE details
-FIELDS TERMINATED BY'\,'
-LINES TERMINATED BY'\n'
-(id,name,age,grade,city);
- 
