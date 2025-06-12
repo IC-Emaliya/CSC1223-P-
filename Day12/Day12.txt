@@ -1,0 +1,287 @@
+01)
+MariaDB [(none)]> create database AirTravel;
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [(none)]> use AirTravel;
+Database changed
+MariaDB [AirTravel]> create table Airport(airportId VARCHAR(30) Primary Key,name Varchar(30),city varchar(30));
+Query OK, 0 rows affected (0.011 sec)
+
+MariaDB [AirTravel]> DESC airport;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| airportId | varchar(30) | NO   | PRI | NULL    |       |
+| name      | varchar(30) | YES  |     | NULL    |       |
+| city      | varchar(30) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+3 rows in set (0.021 sec)
+
+MariaDB [AirTravel]> insert Into airport Values
+    -> ('LHR','Heathrow','London'),
+    -> ('LGW','Gatwick','London'),
+    -> ('CDG','CDGaulle','Paris'),
+    -> ('ORY','Orly','Paris');
+Query OK, 4 rows affected (0.057 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [AirTravel]> select * from airport;
++-----------+----------+--------+
+| airportId | name     | city   |
++-----------+----------+--------+
+| CDG       | CDGaulle | Paris  |
+| LGW       | Gatwick  | London |
+| LHR       | Heathrow | London |
+| ORY       | Orly     | Paris  |
++-----------+----------+--------+
+4 rows in set (0.001 sec)
+
+MariaDB [AirTravel]> create table Flight(flightNo VARCHAR(30),flightCompany VARCHAR(30),depAirport VARCHAR(30),arrAirport Varchar(30),Primary Key(flightNo,depAirport),Foreign Key(depAirport) References airport(airportId),Foreign Key(arrAirport) References airport(airportId));
+Query OK, 0 rows affected (0.035 sec)
+
+MariaDB [AirTravel]> DESC Flight;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| flightNo      | varchar(30) | NO   | PRI | NULL    |       |
+| flightCompany | varchar(30) | YES  |     | NULL    |       |
+| depAirport    | varchar(30) | NO   | PRI | NULL    |       |
+| arrAirport    | varchar(30) | YES  | MUL | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+4 rows in set (0.021 sec)
+
+MariaDB [AirTravel]> INSERT INTO Flight Values
+    -> ('AF1231','AirFrance','LHR','CDG'),
+    -> ('AF1232','AirFrance','CDG','LHR'),
+    -> ('AF1234','AirFrance','LGW','CDG'),
+    -> ('AF1234','AirFrance','CDG','LGW'),
+    -> ('BA2943','British Airways','LGW','ORY'),
+    -> ('BA2944','British Airways','ORY','LGW'),
+    -> ('BA4059','British Airways','LHR','CDG'),
+    -> ('BA4060','British Airways','CDG','LHR');
+Query OK, 8 rows affected (0.004 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+MariaDB [AirTravel]> select * from Flight;
++----------+-----------------+------------+------------+
+| flightNo | flightCompany   | depAirport | arrAirport |
++----------+-----------------+------------+------------+
+| AF1231   | AirFrance       | LHR        | CDG        |
+| AF1232   | AirFrance       | CDG        | LHR        |
+| AF1234   | AirFrance       | CDG        | LGW        |
+| AF1234   | AirFrance       | LGW        | CDG        |
+| BA2943   | British Airways | LGW        | ORY        |
+| BA2944   | British Airways | ORY        | LGW        |
+| BA4059   | British Airways | LHR        | CDG        |
+| BA4060   | British Airways | CDG        | LHR        |
++----------+-----------------+------------+------------+
+8 rows in set (0.001 sec)
+
+MariaDB [AirTravel]> create table Seat(seatNo VARCHAR(30),flightNo VARCHAR(30),class VARCHAR(30),Primary Key(seatNo,flightNo),Foreign Key(flightNo) REFERENCES Flight(FlightNo));
+Query OK, 0 rows affected (0.041 sec)
+
+MariaDB [AirTravel]> DESC seat;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| seatNo   | varchar(30) | NO   | PRI | NULL    |       |
+| flightNo | varchar(30) | NO   | PRI | NULL    |       |
+| class    | varchar(30) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.030 sec)
+
+MariaDB [AirTravel]> Insert Into Seat Values
+    -> ('12D','AF1232','Business'),
+    -> ('30E','AF1232','Economy'),
+    -> ('10A','BA2944','Business'),
+    -> ('5D','BA4060','Business'),
+    -> ('14B','BA4059','Economy'),
+    -> ('30D','BA2944','Business');
+Query OK, 6 rows affected (0.004 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+MariaDB [AirTravel]> select * from seat;
++--------+----------+----------+
+| seatNo | flightNo | class    |
++--------+----------+----------+
+| 10A    | BA2944   | Business |
+| 12D    | AF1232   | Business |
+| 14B    | BA4059   | Economy  |
+| 30D    | BA2944   | Business |
+| 30E    | AF1232   | Economy  |
+| 5D     | BA4060   | Business |
++--------+----------+----------+
+6 rows in set (0.001 sec)
+
+MariaDB [AirTravel]> create table Booking(ticketNo VARCHAR(30) Primary Key,name VARCHAR(30),nationality VARCHAR(30),flightNo VARCHAR(30),seatNo VARCHAR(30), Foreign Key (flightNo) REFERENCES flight(flightNo), Foreign Key (seatNo) REFERENCES seat(seatNo));
+Query OK, 0 rows affected (0.031 sec)
+
+MariaDB [AirTravel]> DESC Booking;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| ticketNo    | varchar(30) | NO   | PRI | NULL    |       |
+| name        | varchar(30) | YES  |     | NULL    |       |
+| nationality | varchar(30) | YES  |     | NULL    |       |
+| flightNo    | varchar(30) | YES  | MUL | NULL    |       |
+| seatNo      | varchar(30) | YES  | MUL | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+5 rows in set (0.024 sec)
+
+MariaDB [AirTravel]> Insert Into Booking Values
+    -> ('EAG12948','John Jones','British','AF1232','12D'),
+    -> ('EAF12345','Frase Ewan','Spanish','AF1232','30E'),
+    -> ('ABS95833','Mat Duval','French','BA2944','10A'),
+    -> ('ORE39489','Fiona Kam','British','BA4060','5D'),
+    -> ('EYR14958','Kare Wood','Italian','BA4059','14B'),
+    -> ('EAG34859','Pierc Front','French','BA2944','30D');
+Query OK, 6 rows affected (0.004 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+MariaDB [AirTravel]> select * from Booking;
++----------+-------------+-------------+----------+--------+
+| ticketNo | name        | nationality | flightNo | seatNo |
++----------+-------------+-------------+----------+--------+
+| ABS95833 | Mat Duval   | French      | BA2944   | 10A    |
+| EAF12345 | Frase Ewan  | Spanish     | AF1232   | 30E    |
+| EAG12948 | John Jones  | British     | AF1232   | 12D    |
+| EAG34859 | Pierc Front | French      | BA2944   | 30D    |
+| EYR14958 | Kare Wood   | Italian     | BA4059   | 14B    |
+| ORE39489 | Fiona Kam   | British     | BA4060   | 5D     |
++----------+-------------+-------------+----------+--------+
+6 rows in set (0.001 sec)
+
+
+
+
+02)
+
+1.
+MariaDB [AirTravel]> select * from Booking
+    -> Where Nationality IN('British','French');
++----------+-------------+-------------+----------+--------+
+| ticketNo | name        | nationality | flightNo | seatNo |
++----------+-------------+-------------+----------+--------+
+| ABS95833 | Mat Duval   | French      | BA2944   | 10A    |
+| EAG12948 | John Jones  | British     | AF1232   | 12D    |
+| EAG34859 | Pierc Front | French      | BA2944   | 30D    |
+| ORE39489 | Fiona Kam   | British     | BA4060   | 5D     |
++----------+-------------+-------------+----------+--------+
+4 rows in set (0.000 sec)
+
+
+2.
+MariaDB [AirTravel]> select count(Distinct (FlightNo)) from Flight
+    -> where flightCompany='AirFrance';
++----------------------------+
+| count(Distinct (FlightNo)) |
++----------------------------+
+|                          3 |
++----------------------------+
+1 row in set (0.000 sec)
+
+
+3.
+MariaDB [AirTravel]> select name,nationality from Booking
+    -> where name like 'f%';
++------------+-------------+
+| name       | nationality |
++------------+-------------+
+| Frase Ewan | Spanish     |
+| Fiona Kam  | British     |
++------------+-------------+
+2 rows in set (0.000 sec)
+
+4.
+MariaDB [AirTravel]> select name from Booking b join Seat s
+    -> ON b.seatNo=s.seatNo AND b.flightNo=s.flightNo
+    -> where class='Business'
+    -> Order by(b.name) DESC;
++-------------+
+| name        |
++-------------+
+| Pierc Front |
+| Mat Duval   |
+| John Jones  |
+| Fiona Kam   |
++-------------+
+4 rows in set (0.000 sec)
+
+
+5.
+MariaDB [AirTravel]> select count(b.name) from Booking b
+    -> Join flight f on b.flightNo=f.flightNo
+    -> join Airport a on a.airportId=f.arrAirport
+    -> Where a.city='Paris';
++---------------+
+| count(b.name) |
++---------------+
+|             1 |
++---------------+
+1 row in set (0.001 sec)
+
+6.
+MariaDB [AirTravel]> select b.name,f.flightNo,f.flightCompany from Booking b
+    -> Join flight f on b.flightNo=f.flightNo;
++-------------+----------+-----------------+
+| name        | flightNo | flightCompany   |
++-------------+----------+-----------------+
+| Mat Duval   | BA2944   | British Airways |
+| Frase Ewan  | AF1232   | AirFrance       |
+| John Jones  | AF1232   | AirFrance       |
+| Pierc Front | BA2944   | British Airways |
+| Kare Wood   | BA4059   | British Airways |
+| Fiona Kam   | BA4060   | British Airways |
++-------------+----------+-----------------+
+6 rows in set (0.001 sec)
+
+
+7.
+MariaDB [AirTravel]>  select b.ticketNo,b.name from Booking b
+    -> Join flight f on b.flightNo=f.flightNo
+    -> join Airport a on a.airportId=f.depAirport
+    -> Where a.city='London';
++----------+-----------+
+| ticketNo | name      |
++----------+-----------+
+| EYR14958 | Kare Wood |
++----------+-----------+
+1 row in set (0.001 sec)
+
+
+8.
+MariaDB [AirTravel]> Delete from booking
+    -> Where name='Kare Wood';
+Query OK, 1 row affected (0.004 sec)
+
+MariaDB [AirTravel]> select * from Booking;
++----------+-------------+-------------+----------+--------+
+| ticketNo | name        | nationality | flightNo | seatNo |
++----------+-------------+-------------+----------+--------+
+| ABS95833 | Mat Duval   | French      | BA2944   | 10A    |
+| EAF12345 | Frase Ewan  | Spanish     | AF1232   | 30E    |
+| EAG12948 | John Jones  | British     | AF1232   | 12D    |
+| EAG34859 | Pierc Front | French      | BA2944   | 30D    |
+| ORE39489 | Fiona Kam   | British     | BA4060   | 5D     |
++----------+-------------+-------------+----------+--------+
+5 rows in set (0.001 sec)
+
+
+9.
+MariaDB [AirTravel]> select f.flightCompany,count(DISTINCT a.city)
+    -> from Flight f
+    -> join Airport a
+    -> on a.airportId=f.depAirport OR a.airportId=f.arrAirport
+    -> Group by(flightCompany)
+    -> Order by (flightCompany) DESC
+    -> Limit 1;
++-----------------+------------------------+
+| flightCompany   | count(DISTINCT a.city) |
++-----------------+------------------------+
+| British Airways |                      2 |
++-----------------+------------------------+
+1 row in set (0.001 sec)
+
+conclusion- Learnt how to join Tables.
+
+
